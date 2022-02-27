@@ -26,5 +26,36 @@ class DB {
         return this.connection.promise().query("INSERT INTO employee SET ?", employee);
     }
 
+    // remove employee with given id
+    removeEmployee(employeeId) {
+        return this.connection.promise().query(
+            "DELETE FROM employee WHERE id = ?",
+            employeeId
+        );
+    }
+
+    // update the given employee's role
+    updateEmployeeRole(employeeId, roleId) {
+        return this.connection.promise().query(
+            "UPDATE employee SET role_id = ? WHERE id = ?",
+            [roleId, employeeId]
+        );
+    }
+
+    // update given employee manager
+    updateEmployeeManager(employeeId, managerId) {
+        return this.connection.promise().query(
+            "UPDATE employee SET manager_id = ? WHERE id = ?",
+            [managerId, employeeId]
+        );
+    }
+
+    // find all roles, join with department to display department name
+    findAllRoles() {
+        return this.connection.promise().query(
+            "SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;"
+        );
+    }
+
     
 }
