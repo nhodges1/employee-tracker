@@ -518,4 +518,10 @@ function addEmployee() {
                         })              
                 })                      
         })                              
-}             
+}
+
+// Exit the application
+function quit() {
+    console.log("Goodbye!");
+    process.exit();
+}
