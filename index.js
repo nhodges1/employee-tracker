@@ -230,3 +230,103 @@ function removeEmployee() {
                 .then(() => loadMainPrompts())
         })  
   }
+
+  // Update an employee's role
+function updateEmployeeRole() {
+    db.findAllEmployees()
+        .then(([rows]) => {
+            let employees = rows;
+            const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+                name: `${first_name} ${last_name}`,
+                value: id
+            }));
+          
+            prompt([
+                {
+                    type: "list",
+                    name: "employeeId",
+                    message: "Which employee's role do you want to update?",
+                    choices: employeeChoices
+                }
+            ])
+                .then(res => {
+                    let employeeId = res.employeeId;
+                    db.findAllRoles()
+                        .then(([rows]) => {
+                            let roles = rows;
+                            const roleChoices = roles.map(({ id, title }) => ({
+                                name: title,
+                                value: id
+                            }));
+                        
+                            prompt([
+                                {
+                                    type: "list",
+                                    name: "roleId",
+                                    message: "Which role do you want to assign the selected employee?",
+                                    choices: roleChoices
+                                }
+                            ])
+                                .then(res => db.updateEmployeeRole(employeeId, res.roleId))
+                                .then(() => console.log("Updated employee's role"))
+                                .then(() => loadMainPrompts())
+                        });
+              });
+        })  
+}
+
+// Update an employee's manager
+function updateEmployeeManager() {
+    db.findAllEmployees()
+        .then(([rows]) => {
+            let employees = rows;
+            const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+                name: `${first_name} ${last_name}`,
+                value: id
+            }));
+          
+            prompt([
+                {
+                    type: "list",
+                    name: "employeeId",
+                    message: "Which employee's manager do you want to update?",
+                    choices: employeeChoices
+                }
+            ])
+                .then(res => {
+                    let employeeId = res.employeeId
+                    db.findAllPossibleManagers(employeeId)
+                        .then(([rows]) => {
+                            let managers = rows;
+                            const managerChoices = managers.map(({ id, first_name, last_name }) => ({
+                                name: `${first_name} ${last_name}`,
+                                value: id
+                            }));
+                        
+                            prompt([
+                                {
+                                    type: "list",
+                                    name: "managerId",
+                                    message:
+                                        "Which employee do you want to set as manager for the selected employee?",
+                                    choices: managerChoices
+                                }
+                            ])
+                                .then(res => db.updateEmployeeManager(employeeId, res.managerId))
+                                .then(() => console.log("Updated employee's manager"))
+                                .then(() => loadMainPrompts())
+                        })  
+                })  
+        })  
+}
+
+// View all roles
+function viewRoles() {
+    db.findAllRoles()
+        .then(([rows]) => {
+            let roles = rows;
+            console.log("\n");
+            console.table(roles);
+        })
+        .then(() => loadMainPrompts());
+}
